@@ -12,11 +12,24 @@ public class HomeMainServlet2 extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html; charset=UTF-8");
 		
-		response.getWriter().append("9단<br>");
+		String inputedDan = request.getParameter("dan");
 		
-		int dan = Integer.parseInt(request.getParameter("dan"));
+		if(inputedDan == null) {
+			inputedDan = "1";
+		}
 		
-		for(int i = 1; i <= 9; i++) {
+		String inputedLimit = request.getParameter("limit");
+		
+		if(inputedLimit == null) {
+			inputedLimit = "9";
+		}
+		
+		int dan = Integer.parseInt(inputedDan);
+		int limit = Integer.parseInt(inputedLimit);
+		
+		response.getWriter().append(String.format("%d단<br />", dan));
+		
+		for(int i = 1; i <= limit; i++) {
 			response.getWriter().append(String.format("%d * %d = %d<br>", dan , i , dan * i));
 		}
 	}
