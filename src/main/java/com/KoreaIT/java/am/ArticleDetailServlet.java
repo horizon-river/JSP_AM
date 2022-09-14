@@ -17,8 +17,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/list")
-public class ArticleListServlet extends HttpServlet {
+@WebServlet("/article/detail")
+public class ArticleDetailServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -47,16 +47,16 @@ public class ArticleListServlet extends HttpServlet {
 			
 			DBUtil dbUtil = new DBUtil(request, response);
 			
+			int id = Integer.parseInt(request.getParameter("id"));
+			
 			SecSql sql = new SecSql();
 			
-			sql.append("SELECT * FROM article");
+			sql.append("SELECT * FROM article WHERE id = ?", id);
+					
+			Map<String, Object> articleRow = dbUtil.selectRow(conn, sql);
 			
-			List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql);
-			
-			response.getWriter().append(articleRows.toString());
-			
-			request.setAttribute("articleRows", articleRows);
-			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
+			request.setAttribute("articleRow", articleRow);
+			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
