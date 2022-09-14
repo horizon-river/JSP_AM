@@ -1,4 +1,4 @@
-package com.KoreaIT.java.am;
+package com.KoreaIT.java.am.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,8 +17,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/detail")
-public class ArticleDetailServlet extends HttpServlet {
+@WebServlet("/article/list")
+public class ArticleListServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -45,18 +45,16 @@ public class ArticleDetailServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(url, "root", "");
 			
-			DBUtil dbUtil = new DBUtil(request, response);
-			
-			int id = Integer.parseInt(request.getParameter("id"));
-			
 			SecSql sql = new SecSql();
 			
-			sql.append("SELECT * FROM article WHERE id = ?", id);
-					
-			Map<String, Object> articleRow = dbUtil.selectRow(conn, sql);
+			sql.append("SELECT * FROM article ORDER BY id DESC");
 			
-			request.setAttribute("articleRow", articleRow);
-			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
+			List<Map<String, Object>> articleRows = DBUtil.selectRows(conn, sql);
+			
+			response.getWriter().append(articleRows.toString());
+			
+			request.setAttribute("articleRows", articleRows);
+			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();

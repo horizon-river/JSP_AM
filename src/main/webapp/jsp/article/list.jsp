@@ -19,7 +19,7 @@ List<Map<String, Object>> articleRows = (List<Map<String, Object>>)request.getAt
 		<a href="detail" target="_blank">상세보기</a>
 	</div>
 	
-	<h1>게시물 리스트 v5</h1>
+	<h1>게시물 리스트</h1>
 	
 	<ul>
 		<%for(Map<String, Object> articleRow : articleRows){ %>
