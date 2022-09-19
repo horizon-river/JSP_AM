@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.time.LocalDateTime;
 
+import com.KoreaIT.java.am.config.Config;
 import com.KoreaIT.java.am.util.DBUtil;
 import com.KoreaIT.java.am.util.SecSql;
 
@@ -25,13 +26,10 @@ public class ArticleDetailServlet extends HttpServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		
 		//DB 연결
-		String url = "jdbc:mysql://127.0.0.1:3306/JSPTest?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
-		String user = "root";
-		String password = "";
 		
 		Connection conn = null;
 		
-		String driverName = "com.mysql.jdbc.Driver";
+		String driverName = Config.getDBDriverClassName();
 		
 		try {
 			Class.forName(driverName);
@@ -43,7 +41,7 @@ public class ArticleDetailServlet extends HttpServlet {
 		} 
 		
 		try {
-			conn = DriverManager.getConnection(url, "root", "");
+			conn = DriverManager.getConnection(Config.getDBUrl(), Config.getDBUser(), Config.getDBPassword());
 			
 			int id = Integer.parseInt(request.getParameter("id"));
 			
