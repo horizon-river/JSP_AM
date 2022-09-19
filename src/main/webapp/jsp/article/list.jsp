@@ -56,13 +56,28 @@ int totalPage = (int) request.getAttribute("totalPage");
 	</style>
 	
 	<div class="page">
+		<% if (curPage > 1) { %>
+			<a href="list?page=1">◀◀</a>
+		<% } %>
 		<%
-		for(int i = 1; i <= totalPage; i++) {
+		int pageSize = 5;
+		int from = curPage - pageSize;
+		if (from < 1){
+			from = 1;
+		}
+		int end = curPage + pageSize;
+		if (end > totalPage){
+			end = totalPage;
+		}
+		for(int i = from; i <= end; i++) {
 		%>
 			<a class="<%=curPage == i ? "red" : "" %>" href="list?page=<%=i%>"><%=i %></a>
 		<%
 		}
 		%>
+		<% if (curPage < totalPage) { %>
+			<a href="list?page=<%=totalPage %>">▶▶</a>
+		<% } %>
 	</div>
 </body>
 </html>
