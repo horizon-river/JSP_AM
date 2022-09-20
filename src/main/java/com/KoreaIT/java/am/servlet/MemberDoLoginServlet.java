@@ -18,8 +18,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/member/doJoin")
-public class MemberDoJoinServlet extends HttpServlet {
+@WebServlet("/member/doLogin")
+public class MemberDoLoginServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
@@ -44,30 +44,23 @@ public class MemberDoJoinServlet extends HttpServlet {
 			conn = DriverManager.getConnection(Config.getDBUrl(), Config.getDBUser(), Config.getDBPassword());
 			
 			String loginId = request.getParameter("loginId");
+			String loginPw = request.getParameter("loginPw");
 			
-			SecSql sql = SecSql.from("SELECT COUNT(*) AS cnt");
+			
+			SecSql sql = SecSql.from("SELECT *");
 			sql.append("FROM `member`");
-			sql.append("WHERE loginId = ?",loginId);
+			sql.append("WHERE loginId = ?", loginId);
+			sql.append("AND loginPw = ?", loginPw);
+					
+			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
 			
-			int isJoinableLoginId = DBUtil.selectRowIntValue(conn, sql);
-			
-			if(isJoinableLoginId == 1) {
-				response.getWriter().append(String.format("<script>alert('%s는 이미 사용중인 아이디 입니다.'); history.back();</script>",loginId));
+			if(articleRow.isEmpty()) {
+				response.getWriter().append(String.format("<script>alert('로그인 정보를 확인해주세요.'); history.back();</script>"));
 				return;
 			}
 			
-			String loginPw = request.getParameter("loginPw");
-			String name = request.getParameter("name");
 			
-			sql = SecSql.from("INSERT INTO `member`");
-			sql.append("SET regDate = NOW()");
-			sql.append(",loginId = ?",loginId);
-			sql.append(",loginPw = ?",loginPw);
-			sql.append(",`name` = ?",name);
-			
-			int id = DBUtil.insert(conn, sql);
-			
-			response.getWriter().append(String.format("<script>alert('%d번 회원님 가입 되었습니다.'); location.replace('../home/main');</script>",id));
+			request.getRequestDispatcher("/jsp/member/login.jsp").forward(request, response);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
