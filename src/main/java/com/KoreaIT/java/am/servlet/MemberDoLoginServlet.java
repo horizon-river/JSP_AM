@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
-import java.time.LocalDateTime;
 
 import com.KoreaIT.java.am.config.Config;
 import com.KoreaIT.java.am.util.DBUtil;
@@ -17,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/member/doLogin")
 public class MemberDoLoginServlet extends HttpServlet {
@@ -46,21 +45,26 @@ public class MemberDoLoginServlet extends HttpServlet {
 			String loginId = request.getParameter("loginId");
 			String loginPw = request.getParameter("loginPw");
 			
-			
 			SecSql sql = SecSql.from("SELECT *");
 			sql.append("FROM `member`");
 			sql.append("WHERE loginId = ?", loginId);
-			sql.append("AND loginPw = ?", loginPw);
 					
-			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
+			Map<String, Object> memberRow = DBUtil.selectRow(conn, sql);
 			
-			if(articleRow.isEmpty()) {
-				response.getWriter().append(String.format("<script>alert('로그인 정보를 확인해주세요.'); history.back();</script>"));
+			if(memberRow.isEmpty()) {
+				response.getWriter().append(String.format("<script>alert('아이디를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요.'); history.back();</script>"));
 				return;
 			}
 			
+			if(memberRow.get("loginPw").equals(loginPw) == false) {
+				response.getWriter().append(String.format("<script>alert('비밀번호가 일치하지 않습니다.'); history.back();</script>"));
+				return;
+			}
 			
-			request.getRequestDispatcher("/jsp/member/login.jsp").forward(request, response);
+			HttpSession session = request.getSession();
+			session.setAttribute("loginedMemberLoginId", memberRow.get("loginId"));
+			session.setAttribute("loginedMemberId", memberRow.get("id"));
+			response.getWriter().append(String.format("<script>alert('%s님 환영합니다.'); location.replace('../home/main');</script>",memberRow.get("loginId")));
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
