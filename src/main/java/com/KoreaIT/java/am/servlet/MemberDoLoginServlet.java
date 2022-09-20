@@ -64,7 +64,7 @@ public class MemberDoLoginServlet extends HttpServlet {
 			HttpSession session = request.getSession();
 			session.setAttribute("loginedMemberLoginId", memberRow.get("loginId"));
 			session.setAttribute("loginedMemberId", memberRow.get("id"));
-			response.getWriter().append(String.format("<script>alert('%s님 환영합니다.'); location.replace('../home/main');</script>",memberRow.get("loginId")));
+			response.getWriter().append(String.format("<script>alert('%s님 환영합니다.'); location.replace('../home/main');</script>",memberRow.get("name")));
 			
 		} catch (SQLException e) {
 			e.printStackTrace();

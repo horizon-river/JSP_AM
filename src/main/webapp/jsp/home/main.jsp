@@ -29,6 +29,7 @@
 	%>
 	<div>
 		<a href="../member/login">로그인</a>
+		<a href="../member/join">회원가입</a>
 	</div>
 	<%
 	}
@@ -36,7 +37,6 @@
 	
 	<div>
 		<a href="../article/list">게시물 리스트</a>
-		<a href="../member/join">회원가입</a>
 	</div>
 	
 </body>
