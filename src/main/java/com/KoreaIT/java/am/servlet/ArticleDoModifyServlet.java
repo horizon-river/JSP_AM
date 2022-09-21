@@ -17,6 +17,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/doModify")
 public class ArticleDoModifyServlet extends HttpServlet {
@@ -24,6 +25,12 @@ public class ArticleDoModifyServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		response.setContentType("text/html; charset=UTF-8");
+		
+		HttpSession session = request.getSession();
+		if (session.getAttribute("loginedMemberId") == null) {
+			response.getWriter().append(String.format("<script>alert('로그인 후 이용해주세요.'); location.replace('../member/login');</script>"));
+			return;
+		}
 		
 		//DB 연결
 		
@@ -44,6 +51,7 @@ public class ArticleDoModifyServlet extends HttpServlet {
 			conn = DriverManager.getConnection(Config.getDBUrl(), Config.getDBUser(), Config.getDBPassword());
 			
 			int id = Integer.parseInt(request.getParameter("id"));
+			
 			String title = request.getParameter("title");
 			String body = request.getParameter("body");
 			

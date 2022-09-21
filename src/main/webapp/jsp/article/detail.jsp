@@ -21,6 +21,7 @@ Map<String, Object> articleRow = (Map<String, Object>)request.getAttribute("arti
 	<div>날짜 : <%=(LocalDateTime)articleRow.get("regDate") %></div>
 	<div>제목 : <%=(String)articleRow.get("title") %></div>
 	<div>내용 : <%=(String)articleRow.get("body") %></div>
+	<div>작성자 : <%=(String)articleRow.get("writer") %></div>
 	<div>
 		<a href="list" >리스트로 돌아가기</a>
 		<a href="modify?id=<%=(int)articleRow.get("id") %>">수정</a>
