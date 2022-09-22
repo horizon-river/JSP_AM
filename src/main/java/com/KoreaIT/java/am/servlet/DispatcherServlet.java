@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
-import java.time.LocalDateTime;
 
 import com.KoreaIT.java.am.config.Config;
 import com.KoreaIT.java.am.controller.ArticleController;
+import com.KoreaIT.java.am.exception.SQLErrorException;
 import com.KoreaIT.java.am.util.DBUtil;
 import com.KoreaIT.java.am.util.SecSql;
 
@@ -23,70 +22,73 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/s/*")
 public class DispatcherServlet extends HttpServlet {
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		response.setContentType("text/html; charset=UTF-8");
 		request.setCharacterEncoding("UTF-8");
-		
-		//DB 연결
-		
+
+		String requestUri = request.getRequestURI();
+		String[] requestUriBits = requestUri.split("/");
+
+		if (requestUriBits.length < 5) {
+			response.getWriter().append("올바른 요청이 아닙니다.");
+			return;
+		}
+
+		// DB 연결
+
 		Connection conn = null;
-		
+
 		String driverName = Config.getDBDriverClassName();
-		
+
 		try {
 			Class.forName(driverName);
-						
+
 		} catch (ClassNotFoundException e) {
 			System.out.println("예외 : 클래스가 없습니다.");
 			System.out.println("프로그램을 종료합니다.");
 			return;
-		} 
-		
+		}
+
 		try {
 			conn = DriverManager.getConnection(Config.getDBUrl(), Config.getDBUser(), Config.getDBPassword());
-			
-			// 모든 요청에 응답 하기 전에 무조건 실행
+
+			// 모든 요청에 응답 하기 전에 무조건 해야함
 			HttpSession session = request.getSession();
-			
+
 			boolean isLogined = false;
 			int loginedMemberId = -1;
-			Map<String, Object> loginedMemberRow = null;
-			
-			if (session.getAttribute("loginedMemberId") != null) {
+			Map<String, Object> loginedMemebrRow = null;
+
+			if (session.getAttribute("loginedMemberLoginId") != null) {
 				loginedMemberId = (int) session.getAttribute("loginedMemberId");
 				isLogined = true;
-				
+
 				SecSql sql = SecSql.from("SELECT * FROM `member`");
-				sql.append("WHERE id = ?", loginedMemberId);
-				loginedMemberRow = DBUtil.selectRow(conn, sql);
+				sql.append("WHERE id = ?;", loginedMemberId);
+				loginedMemebrRow = DBUtil.selectRow(conn, sql);
 			}
-			
+
 			request.setAttribute("isLogined", isLogined);
 			request.setAttribute("loginedMemberId", loginedMemberId);
-			request.setAttribute("loginedMemberRow", loginedMemberRow);
-			
-			String requestUri = request.getRequestURI();
-			String[] requestUriBits = requestUri.split("/");
-			
-			if(requestUriBits.length < 5) {
-				response.getWriter().append("올바른 요청이 아닙니다.");
-				return;
-			}
-			
+			request.setAttribute("loginedMemebrRow", loginedMemebrRow);
+
 			String controllerName = requestUriBits[3];
 			String actionMethodName = requestUriBits[4];
-			
-			if(controllerName.equals("article")) {
+
+			if (controllerName.equals("article")) {
 				ArticleController articleController = new ArticleController(request, response, conn);
-				
-				if(actionMethodName.equals("list")) {
+
+				if (actionMethodName.equals("list")) {
 					articleController.showList();
 				}
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (SQLErrorException e) {
+			e.getOrigin().printStackTrace();
 		} finally {
 			try {
 				if (conn != null && !conn.isClosed()) {
@@ -97,10 +99,10 @@ public class DispatcherServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		doGet(request, response);
 	}
 

@@ -20,6 +20,8 @@ CREATE TABLE `member`(
     `name` CHAR(100) NOT NULL
 );
 
+ALTER TABLE article ADD COLUMN memberId INT(10) UNSIGNED NOT NULL AFTER regDate;
+
 # 게시글 테스트데이터 생성
 INSERT INTO article 
 SET regDate = NOW(),
@@ -30,10 +32,10 @@ INSERT INTO article (regDate, title, `body`)
 SELECT NOW(), CONCAT('제목__',RAND()), CONCAT('내용__', RAND())
 FROM article;
 
-ALTER TABLE article ADD COLUMN memberId INT(10) UNSIGNED NOT NULL AFTER regDate;
-
 SELECT * FROM article ORDER BY id DESC;
 SELECT * FROM `member`;
+
+UPDATE article SET memberId=2 WHERE memberId=0;
 
 INSERT INTO article 
 SET regDate = NOW(),
@@ -67,4 +69,3 @@ SET regDate = NOW(),
 loginId = 'test3',
 `loginPw` = 'test3',
 `name` = '유저3';
-
