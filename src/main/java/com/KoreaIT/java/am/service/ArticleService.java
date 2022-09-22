@@ -2,9 +2,9 @@ package com.KoreaIT.java.am.service;
 
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
 
 import com.KoreaIT.java.am.dao.ArticleDao;
+import com.KoreaIT.java.am.dto.Article;
 
 public class ArticleService {
 	private Connection conn;
@@ -31,13 +31,15 @@ public class ArticleService {
 		return totalPage;
 	}
 
-	public List<Map<String, Object>> getForPrintArticleRows(int page) {
+	public List<Article> getForPrintArticleRows(int page) {
 
 		int itemsInAPage = getItemsInAPage();
 		
 		int limitFrom = (page - 1) * itemsInAPage;
 		
-		return articleDao.getForPrintArticleRows(limitFrom, itemsInAPage);
+		List<Article> articles = articleDao.getForPrintArticleRows(limitFrom, itemsInAPage);
+		
+		return articles;
 	}
 	
 }

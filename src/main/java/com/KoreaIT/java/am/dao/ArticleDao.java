@@ -1,9 +1,11 @@
 package com.KoreaIT.java.am.dao;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.KoreaIT.java.am.dto.Article;
 import com.KoreaIT.java.am.util.DBUtil;
 import com.KoreaIT.java.am.util.SecSql;
 
@@ -23,9 +25,9 @@ public class ArticleDao {
 		return 0;
 	}
 
-	public List<Map<String, Object>> getForPrintArticleRows(int limitFrom, int itemsInAPage) {
+	public List<Article> getForPrintArticleRows(int limitFrom, int itemsInAPage) {
 		
-		SecSql sql = SecSql.from("SELECT A.*, M.name AS writer");
+		SecSql sql = SecSql.from("SELECT A.*, M.name AS extra__writer");
 		sql.append("FROM article AS A");
 		sql.append("INNER JOIN `member` AS M");
 		sql.append("ON A.memberId = M.id");
@@ -34,6 +36,12 @@ public class ArticleDao {
 		
 		List<Map<String, Object>> articleRows = DBUtil.selectRows(conn, sql);
 		
-		return articleRows;
+		List<Article> articles = new ArrayList<>();
+		
+		for(Map<String, Object> articleRow : articleRows) {
+			articles.add(new Article(articleRow));
+		}
+		
+		return articles;
 	}
 }
