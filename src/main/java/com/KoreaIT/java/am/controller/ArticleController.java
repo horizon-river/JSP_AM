@@ -6,19 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.KoreaIT.java.am.service.ArticleService;
-import com.KoreaIT.java.am.util.DBUtil;
-import com.KoreaIT.java.am.util.SecSql;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 public class ArticleController {
 	
 	private HttpServletRequest request;
 	private HttpServletResponse response;
-	private Connection conn;
 	private ArticleService articleService;
 
 	public ArticleController(HttpServletRequest request, HttpServletResponse response, Connection conn) {
